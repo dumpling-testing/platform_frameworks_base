@@ -4896,6 +4896,22 @@ public final class Settings {
                 BOOLEAN_VALIDATOR;
 
         /**
+         * Wheter to show network traffic indicator in statusbar
+         * @hide
+         */
+        public static final String NETWORK_TRAFFIC_EXPANDED_STATUS_BAR_STATE =
+                "network_traffic_expanded_status_bar_state";
+
+        /** @hide */
+        private static final Validator NETWORK_TRAFFIC_EXPANDED_STATUS_BAR_STATE_VALIDATOR = BOOLEAN_VALIDATOR;
+
+        /**
+         * Network traffic location
+         * @hide
+         */
+        public static final String NETWORK_TRAFFIC_LOCATION = "network_traffic_location";
+
+        /**
          * Network traffic inactivity threshold (default is 1 kBs)
          * @hide
          */
@@ -5015,6 +5031,7 @@ public final class Settings {
             DOUBLE_TAP_SLEEP_GESTURE,
             DOUBLE_TAP_SLEEP_LOCKSCREEN,
             NETWORK_TRAFFIC_STATE,
+            NETWORK_TRAFFIC_EXPANDED_STATUS_BAR_STATE,
             NETWORK_TRAFFIC_AUTOHIDE_THRESHOLD,
             NETWORK_TRAFFIC_HIDEARROW,
         };
@@ -5179,6 +5196,7 @@ public final class Settings {
             PRIVATE_SETTINGS.add(SHOW_FOURG);
             PRIVATE_SETTINGS.add(SHOW_VOLTE_ICON);
             PRIVATE_SETTINGS.add(NETWORK_TRAFFIC_STATE);
+            PRIVATE_SETTINGS.add(NETWORK_TRAFFIC_EXPANDED_STATUS_BAR_STATE);
             PRIVATE_SETTINGS.add(NETWORK_TRAFFIC_AUTOHIDE_THRESHOLD);
             PRIVATE_SETTINGS.add(NETWORK_TRAFFIC_HIDEARROW);
         }
@@ -5319,6 +5337,7 @@ public final class Settings {
             VALIDATORS.put(SHOW_FOURG, SHOW_FOURG_VALIDATOR);
             VALIDATORS.put(SHOW_VOLTE_ICON, SHOW_VOLTE_ICON_VALIDATOR);
             VALIDATORS.put(NETWORK_TRAFFIC_STATE, NETWORK_TRAFFIC_STATE_VALIDATOR);
+            VALIDATORS.put(NETWORK_TRAFFIC_EXPANDED_STATUS_BAR_STATE, NETWORK_TRAFFIC_EXPANDED_STATUS_BAR_STATE_VALIDATOR);
             VALIDATORS.put(NETWORK_TRAFFIC_AUTOHIDE_THRESHOLD, NETWORK_TRAFFIC_AUTOHIDE_THRESHOLD_VALIDATOR);
             VALIDATORS.put(NETWORK_TRAFFIC_HIDEARROW, NETWORK_TRAFFIC_HIDEARROW_VALIDATOR);
         }
