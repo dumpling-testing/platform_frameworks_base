@@ -70,6 +70,8 @@ import com.android.systemui.statusbar.policy.RotationLockController.RotationLock
 import com.android.systemui.statusbar.policy.SensorPrivacyController;
 import com.android.systemui.statusbar.policy.UserInfoController;
 import com.android.systemui.statusbar.policy.ZenModeController;
+import com.android.systemui.tuner.TunerService;
+import com.android.systemui.tuner.TunerService.Tunable;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -90,9 +92,11 @@ public class PhoneStatusBarPolicy
                 DeviceProvisionedListener,
                 KeyguardMonitor.Callback,
                 PrivacyItemController.Callback,
-                LocationController.LocationChangeCallback {
+                LocationController.LocationChangeCallback, Tunable {
     private static final String TAG = "PhoneStatusBarPolicy";
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
+
+    private static final String BLUETOOTH_SHOW_CONN = "bluetooth_show_conn";
 
     public static final int LOCATION_STATUS_ICON_ID = R.drawable.stat_sys_location;
 
@@ -197,6 +201,8 @@ public class PhoneStatusBarPolicy
         filter.addAction(Intent.ACTION_MANAGED_PROFILE_REMOVED);
         filter.addAction(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED);
         mContext.registerReceiver(mIntentReceiver, filter, null, mHandler);
+
+        Dependency.get(TunerService.class).addTunable(this, BLUETOOTH_SHOW_CONN);
 
         // listen for user / profile change.
         try {
@@ -435,10 +441,11 @@ public class PhoneStatusBarPolicy
     private final void updateBluetooth() {
         int iconId = R.drawable.stat_sys_data_bluetooth_connected;
         String contentDescription =
-                mContext.getString(R.string.accessibility_quick_settings_bluetooth_on);
-        boolean bluetoothEnabled = false;
+        mContext.getString(R.string.accessibility_quick_settings_bluetooth_on);
+        boolean shouldShowBluetooth = Dependency.get(TunerService.class)
+                             .getValue(BLUETOOTH_SHOW_CONN, 0) != 1;
+        boolean bluetoothVisible = shouldShowBluetooth;
         if (mBluetooth != null) {
-            bluetoothEnabled = mBluetooth.isBluetoothEnabled();
             final Collection<CachedBluetoothDevice> devices = mBluetooth.getDevices();
             if (devices != null) {
                 // get battery level for the first device with battery level support
@@ -455,6 +462,7 @@ public class PhoneStatusBarPolicy
                             iconId = R.drawable.stat_sys_data_bluetooth_connected;
                         }
                         contentDescription = mContext.getString(R.string.accessibility_bluetooth_connected);
+                        bluetoothVisible = mBluetooth.isBluetoothEnabled();
                         break;
                     }
                 }
@@ -462,7 +470,7 @@ public class PhoneStatusBarPolicy
         }
 
         mIconController.setIcon(mSlotBluetooth, iconId, contentDescription);
-        mIconController.setIconVisibility(mSlotBluetooth, bluetoothEnabled);
+        mIconController.setIconVisibility(mSlotBluetooth, bluetoothVisible);
     }
 
     private int getBtLevelIconRes(int batteryLevel) {
@@ -800,4 +808,11 @@ public class PhoneStatusBarPolicy
             mIconController.setIconVisibility(mSlotCast, false);
         }
     };
+
+    @Override
+    public void onTuningChanged(String key, String newValue) {
+        if (BLUETOOTH_SHOW_CONN.equals(key)) {
+            updateBluetooth();
+        }
+    }
 }
